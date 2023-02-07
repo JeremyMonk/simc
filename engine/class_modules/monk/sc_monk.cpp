@@ -776,6 +776,10 @@ struct monk_spell_t : public monk_action_t<spell_t>
     if ( data().id() == 0 )
       return false;
 
+    // These abilities are able to be used during Spinning Crane Kick
+    if ( cast_during_sck )
+      usable_while_casting = p()->channeling && p()->find_action( "spinning_crane_kick" ) && p()->channeling->id == p()->find_action( "spinning_crane_kick" )->id;
+
     return monk_action_t::ready();
   }
 
@@ -1095,10 +1099,28 @@ struct monk_melee_attack_t : public monk_action_t<melee_attack_t>
       return false;
 
     // These abilities are able to be used during Spinning Crane Kick
-    if ( cast_during_sck )
-      usable_while_casting = p()->channeling && p()->channeling->id == p()->find_action( "spinning_crane_kick" )->id;
+    //if ( cast_during_sck )
+      //usable_while_casting = p()->channeling && p()->find_action("spinning_crane_kick") && p()->channeling->id == p()->find_action("spinning_crane_kick")->id;
 
     return monk_action_t::ready();
+  }
+
+  bool usable_during_current_cast() const override
+  {
+    if ( background )
+      return false;
+
+    if ( cast_during_sck )
+    {
+      if ( player->channeling
+        && player->find_action( "spinning_crane_kick" )
+        && player->channeling->id == player->find_action( "spinning_crane_kick" )->id )
+      {
+        return true;
+      }
+    }
+
+    return monk_action_t::usable_during_current_cast();
   }
 
   void init_finished() override
