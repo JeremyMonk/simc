@@ -2682,10 +2682,7 @@ namespace monk
           if ( current_resource() == RESOURCE_CHI && last_resource_cost == 0 )
           {
             if ( p()->sets->has_set_bonus( MONK_WINDWALKER, T31, B2 ) )
-            {
               p()->buff.blackout_reinforcement->trigger();
-              p()->proc.blackout_reinforcement->occur();
-            }
           }
         }
 
@@ -8658,7 +8655,14 @@ namespace monk
     buff.blackout_reinforcement = make_buff( this, "blackout_reinforcement", find_spell( 424454 ) )
       ->set_trigger_spell( sets->set( MONK_WINDWALKER, T31, B2 ) )
       ->set_default_value_from_effect( 1 )
-      ->add_invalidate( CACHE_PLAYER_DAMAGE_MULTIPLIER );
+      ->add_invalidate( CACHE_PLAYER_DAMAGE_MULTIPLIER )
+      ->set_stack_change_callback( [ this ] ( buff_t *, int _old, int _new )
+    {
+        if ( _new > _old  ) 
+          proc.blackout_reinforcement->occur();
+        else
+          proc.blackout_reinforcement_waste->occur();
+      } );
 
     // ------------------------------
     // Movement
@@ -8728,6 +8732,7 @@ namespace monk
     proc.blackout_kick_cdr_serenity_with_woo = get_proc( "Blackout Kick CDR with Serenity with WoO" );
     proc.blackout_kick_cdr_serenity = get_proc( "Blackout Kick CDR with Serenity" );
     proc.blackout_reinforcement = get_proc( "Blackout Reinforcement" );
+    proc.blackout_reinforcement_waste = get_proc( "Blackout Reinforcement Wasted" );
     proc.bonedust_brew_reduction = get_proc( "Bonedust Brew SCK Reduction" );
     proc.bountiful_brew_proc = get_proc( "Bountiful Brew Trigger" );
     proc.charred_passions_bok = get_proc( "Charred Passions - Blackout Kick" );
@@ -8945,7 +8950,6 @@ namespace monk
       create_proc_callback( sets->set( MONK_WINDWALKER, T31, B2 ), [ ] ( monk_t *p, action_state_t *state )
       {
         p->buff.blackout_reinforcement->trigger();
-        p->proc.blackout_reinforcement->occur();
         return true;
        } );
     }
