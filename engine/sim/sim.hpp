@@ -159,6 +159,7 @@ struct sim_t : private sc_thread_t
   int         target_adds;
   std::string sim_progress_base_str, sim_progress_phase_str;
   int         desired_targets; // desired number of targets
+  int         desired_tank_targets; // desired number of tank target dummy npcs
 
 
   // Data access
@@ -178,10 +179,10 @@ struct sim_t : private sc_thread_t
   bool disable_set_bonuses; // Disables all set bonuses.
   bool enable_taunts;
   bool use_item_verification;  // Disable use-item action verification in the simulator
-  unsigned int disable_2_set; // Disables all 2 set bonuses for this tier/integer that this is set as
-  unsigned int disable_4_set; // Disables all 4 set bonuses for this tier/integer that this is set as
-  unsigned int enable_2_set;// Enables all 2 set bonuses for the tier/integer that this is set as
-  unsigned int enable_4_set; // Enables all 4 set bonuses for the tier/integer that this is set as
+  std::string disable_2_set; // Disables all 2 set bonuses for the tier that this is set as
+  std::string disable_4_set; // Disables all 4 set bonuses for the tier that this is set as
+  std::string enable_2_set;// Enables all 2 set bonuses for the tier that this is set as
+  std::string enable_4_set; // Enables all 4 set bonuses for the tier that this is set as
   const spell_data_t* pvp_rules; // Hidden aura that contains the PvP crit damage reduction
   bool pvp_mode; // Enables PvP mode - reduces crit damage, adjusts PvP gear iLvl
   bool auto_attacks_always_land; /// Allow Auto Attacks (white attacks) to always hit the enemy
@@ -629,7 +630,7 @@ struct sim_t : private sc_thread_t
   std::vector<sim_t*> children; // Manual delete!
   int thread_index;
   computer_process::priority_e process_priority;
-  
+
   std::shared_ptr<work_queue_t> work_queue;
 
   // Related Simulations
@@ -748,7 +749,7 @@ struct sim_t : private sc_thread_t
     if ( thread_index != 0 )
       return;
 
-    set_error( fmt::vformat( format, fmt::make_format_args( std::forward<Args>(args)... ) ) );
+    set_error( fmt::vformat( format, fmt::make_format_args( args... ) ) );
   }
 
   void abort();
@@ -802,7 +803,7 @@ struct sim_t : private sc_thread_t
     if ( ! debug )
       return;
 
-    out_debug.vprint( format, fmt::make_format_args( std::forward<Args>(args)... ) );
+    out_debug.vprint( format, fmt::make_format_args( args... ) );
   }
 
   /**
@@ -817,7 +818,7 @@ struct sim_t : private sc_thread_t
     if ( ! log )
       return;
 
-    out_log.vprint( format, fmt::make_format_args( std::forward<Args>(args)... ) );
+    out_log.vprint( format, fmt::make_format_args( args... ) );
   }
 
 private:

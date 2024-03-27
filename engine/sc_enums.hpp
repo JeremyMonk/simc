@@ -30,11 +30,8 @@ enum class profile_source
 };
 
 // Attack power computation modes for Battle for Azeroth+
-enum class attack_power_type
+enum class attack_power_type : unsigned
 {
-  // Let SimC figure out BfA attack power mode based on information assigned to the action object.
-  NONE = -1,
-
   // Default mode, Attack power is a composite of power and mainhand weapon dps
   WEAPON_MAINHAND = 0,
 
@@ -46,6 +43,9 @@ enum class attack_power_type
 
   // Attack power is purely based on player power (main stat)
   NO_WEAPON,
+
+  // Let SimC figure out BfA attack power mode based on information assigned to the action object.
+  NONE,
 
   DEFAULT = WEAPON_MAINHAND,
 };
@@ -274,6 +274,7 @@ enum player_e
   SHAMAN,
   WARLOCK,
   WARRIOR,
+  PLAYER_SIMPLIFIED,
   PLAYER_PET,
   PLAYER_GUARDIAN,
   HEALING_ENEMY,
@@ -830,28 +831,29 @@ enum set_bonus_type_e
   SET_BONUS_NONE = -1,
 
   // Actual tier support in SIMC
-  T19P_G1,
-  T19P_G2,
-  T19P_CLOTH,
-  T19P_LEATHER,
-  T19P_MAIL,
-  T19P_PLATE,
-  T21P_G1,
-  T23_GIFT_OF_THE_LOA,
-  T23_KEEPSAKES,
-  T23_TITANIC_EMPOWERMENT,
-  T26_HACK_AND_GORE,
+  T19_MOTL,
+  T19_JTT,
+  T19_C,
+  T19_L,
+  T19_M,
+  T19_P,
+  T21_WL,
+  T23_GOTL,
+  T24_KS,
+  T23_TE,
+  T26_HG,
   T28,
-  T28_RIPPED_SECRETS,
+  T28_RS,
   T29,
-  T29_PLAYFUL_SPIRITS_FUR,
-  T29_HORIZON_STRIDERS_GARMENTS,
-  T29_AZUREWEAVE_VESTMENTS,
-  T29_WOVEN_CHRONOCLOTH,
-  T29_RAGING_TEMPESTS,
+  T29_PSF,
+  T29_HSG,
+  T29_AV,
+  T29_WC,
+  T29_RT,
   T30,
-  T30_MIGHT_OF_THE_DROGBAR,
+  T30_MOTD,
   T31,
+  DF4,
   SET_BONUS_MAX
 };
 
@@ -1074,7 +1076,7 @@ enum cache_e
   CACHE_STR_AGI_INT,
   CACHE_SPELL_POWER,
   CACHE_ATTACK_POWER,
-  CACHE_TOTAL_MELEE_ATTACK_POWER,
+  CACHE_WEAPON_DPS,
   CACHE_EXP,
   CACHE_ATTACK_EXP,
   CACHE_HIT,
@@ -1160,6 +1162,9 @@ inline cache_e cache_from_stat( stat_e st )
         return CACHE_SPELL_POWER;
       case STAT_ATTACK_POWER:
         return CACHE_ATTACK_POWER;
+      case STAT_WEAPON_DPS:
+      case STAT_WEAPON_OFFHAND_DPS:
+        return CACHE_WEAPON_DPS;
       case STAT_EXPERTISE_RATING:
       case STAT_EXPERTISE_RATING2:
         return CACHE_EXP;

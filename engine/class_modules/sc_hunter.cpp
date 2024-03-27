@@ -1055,16 +1055,16 @@ public:
     ab::execute();
 
     if ( triggers_calling_the_shots )
-      p() -> trigger_calling_the_shots( this, ab::cost() );
+      p() -> trigger_calling_the_shots( this, this -> cost() );
 
     if ( affected_by.t29_sv_4pc_cost )
       p() -> buffs.bestial_barrage -> expire();
     
     if ( triggers_t30_sv_4p )
-      p() -> trigger_t30_sv_4p( this, ab::cost() );
+      p() -> trigger_t30_sv_4p( this, this -> cost() );
 
     if ( triggers_rapid_reload )
-      p() -> trigger_rapid_reload( this, ab::cost() );
+      p() -> trigger_rapid_reload( this, this -> cost() );
   }
 
   void impact( action_state_t* s ) override
@@ -1163,19 +1163,16 @@ public:
     return cm;
   }
 
-  double cost() const override
+  double cost_flat_modifier() const override
   {
-    double c = ab::cost();
+    double c = ab::cost_flat_modifier();
 
     if ( affected_by.t29_sv_4pc_cost && p() -> buffs.bestial_barrage -> check() )
-    { 
+    {
       c += p() -> tier_set.t29_sv_4pc_buff -> effectN( 1 ).base_value();
     }
 
-    if ( c < 0 )
-      return 0;
-
-    return ceil( c );
+    return c;
   }
 
   void update_ready( timespan_t cd ) override
@@ -2253,7 +2250,7 @@ struct beast_cleave_attack_t: public hunter_pet_action_t<hunter_pet_t, melee_att
     hunter_pet_action_t::available_targets( tl );
 
     // Cannot hit the original target.
-    tl.erase( std::remove( tl.begin(), tl.end(), target ), tl.end() );
+    range::erase_remove( tl, target );
 
     return tl.size();
   }
@@ -2311,7 +2308,7 @@ struct kill_cleave_t: public hunter_pet_action_t<hunter_pet_t, melee_attack_t>
     hunter_pet_action_t::available_targets( tl );
 
     // Cannot hit the original target.
-    tl.erase( std::remove( tl.begin(), tl.end(), target ), tl.end() );
+    range::erase_remove( tl, target );
 
     return tl.size();
   }
@@ -2384,9 +2381,9 @@ struct basic_attack_t : public hunter_main_pet_attack_t
     return am;
   }
 
-  double cost() const override
+  double cost_pct_multiplier() const override
   {
-    double c = hunter_main_pet_attack_t::cost();
+    double c = hunter_main_pet_attack_t::cost_pct_multiplier();
 
     if ( use_wild_hunt() )
       c *= wild_hunt.cost_pct;
@@ -2569,7 +2566,7 @@ void hunter_main_pet_base_t::init_spells()
   if ( o() -> talents.kill_cleave.ok() )
     active.kill_cleave = new actions::kill_cleave_t( this );
 
-  if ( o() -> talents.stomp.ok() )
+  if ( o() -> talents.stomp.ok() || o() -> talents.bloody_frenzy.ok() )
     active.stomp = new actions::stomp_t( this );
 }
 
@@ -3083,11 +3080,6 @@ struct kill_shot_t : hunter_ranged_attack_t
     return hunter_ranged_attack_t::n_targets();
   }
 
-  double cost() const override
-  {
-    return hunter_ranged_attack_t::cost();
-  }
-
   bool target_ready( player_t* candidate_target ) override
   {
     return hunter_ranged_attack_t::target_ready( candidate_target ) &&
@@ -3157,9 +3149,9 @@ struct arcane_shot_t: public hunter_ranged_attack_t
     }
   }
 
-  double cost() const override
+  double cost_pct_multiplier() const override
   {
-    double c = hunter_ranged_attack_t::cost();
+    double c = hunter_ranged_attack_t::cost_pct_multiplier();
 
     if ( p() -> buffs.eagletalons_true_focus -> check() )
       c *= 1 + p() -> talents.eagletalons_true_focus -> effectN( 3 ).percent();
@@ -3986,9 +3978,9 @@ struct chimaera_shot_t: public hunter_ranged_attack_t
 
   }
 
-  double cost() const override
+  double cost_pct_multiplier() const override
   {
-    double c = hunter_ranged_attack_t::cost();
+    double c = hunter_ranged_attack_t::cost_pct_multiplier();
 
     if ( p() -> buffs.eagletalons_true_focus -> check() )
       c *= 1 + p() -> talents.eagletalons_true_focus -> effectN( 3 ).percent();
@@ -4117,7 +4109,12 @@ struct aimed_shot_t : public hunter_ranged_attack_t
     if ( casting ? lock_and_loaded : p() -> buffs.lock_and_load -> check() )
       return 0;
 
-    double c = hunter_ranged_attack_t::cost();
+    return hunter_ranged_attack_t::cost();
+  }
+
+  double cost_pct_multiplier() const override
+  {
+    double c = hunter_ranged_attack_t::cost_pct_multiplier();
 
     if ( p() -> buffs.eagletalons_true_focus -> check() )
       c *= 1 + p() -> talents.eagletalons_true_focus -> effectN( 1 ).percent();
@@ -4468,9 +4465,9 @@ struct multishot_mm_t: public hunter_ranged_attack_t
     }
   }
 
-  double cost() const override
+  double cost_pct_multiplier() const override
   {
-    double c = hunter_ranged_attack_t::cost();
+    double c = hunter_ranged_attack_t::cost_pct_multiplier();
 
     if ( p() -> buffs.eagletalons_true_focus -> check() )
       c *= 1 + p() -> talents.eagletalons_true_focus -> effectN( 3 ).percent();
@@ -5538,9 +5535,9 @@ struct kill_command_t: public hunter_spell_t
     }
   }
 
-  double cost() const override
+  double cost_pct_multiplier() const override
   {
-    double c = hunter_spell_t::cost();
+    double c = hunter_spell_t::cost_pct_multiplier();
 
     c *= 1 + p() -> buffs.flamewakers_cobra_sting -> check_value();
     c *= 1 + p() -> buffs.cobra_sting -> check_value();
