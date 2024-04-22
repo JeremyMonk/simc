@@ -1,5 +1,5 @@
-// 570 talents, wow build 11.0.0.54605
-static std::array<talent_data_t, 570> __talent_data { {
+// 572 talents, wow build 10.2.6.54358
+static std::array<talent_data_t, 572> __talent_data { {
   { "Second Wind"                       , 15757, 0x00, 0x0001,   71,   0,   3,   29838,       0,  0 },
   { "Punish"                            , 15759, 0x00, 0x0001,   73,   1,   0,  275334,       0,  0 },
   { "War Machine"                       , 15760, 0x00, 0x0001,   73,   0,   0,  316733,       0,  0 },
@@ -134,6 +134,7 @@ static std::array<talent_data_t, 570> __talent_data { {
   { "Soul of the Forest"                , 21709, 0x00, 0x0400,  104,   0,   4,  158477,       0,  0 },
   { "Soul of the Forest"                , 21710, 0x00, 0x0400,  105,   0,   4,  158478,       0,  0 },
   { "Brutal Slash"                      , 21711, 0x00, 0x0400,  103,   1,   5,  202028,       0,  0 },
+  { "Stellar Drift"                     , 21712, 0x00, 0x0400,  102,   1,   5,  202354,       0,  0 },
   { "Survival of the Fittest"           , 21713, 0x00, 0x0400,  104,   1,   5,  203965,       0,  0 },
   { "Scent of Blood"                    , 21714, 0x00, 0x0400,  103,   0,   5,  285564,       0,  0 },
   { "Inner Peace"                       , 21716, 0x00, 0x0400,  105,   0,   5,  197073,       0,  0 },
@@ -398,7 +399,7 @@ static std::array<talent_data_t, 570> __talent_data { {
   { "Living Bomb"                       , 22472, 0x00, 0x0080,   63,   2,   5,   44457,       0,  0 },
   { "Comet Storm"                       , 22473, 0x00, 0x0080,   64,   2,   5,  153595,       0,  0 },
   { "Supernova"                         , 22474, 0x00, 0x0080,   62,   2,   5,  157980,       0,  0 },
-  { "Wicked Maw"                        , 22477, 0x00, 0x0100,  266,   0,   3,  267170,       0,  0 },
+  { "The Houndmaster's Stratagem"       , 22477, 0x00, 0x0100,  266,   0,   3,  267170,       0,  0 },
   { "Demonic Consumption"               , 22479, 0x00, 0x0100,  266,   1,   6,  267215,       0,  0 },
   { "Inferno"                           , 22480, 0x00, 0x0100,  267,   0,   3,  270545,       0,  0 },
   { "Justicar's Vengeance"              , 22483, 0x00, 0x0002,   70,   1,   5,  215661,       0,  0 },
@@ -568,6 +569,7 @@ static std::array<talent_data_t, 570> __talent_data { {
   { "Execution Sentence"                , 23467, 0x00, 0x0002,   70,   2,   0,  343527,       0,  0 },
   { "Moment of Glory"                   , 23468, 0x00, 0x0002,   66,   2,   1,  327193,       0,  0 },
   { "Blessed Hammer"                    , 23469, 0x00, 0x0002,   66,   2,   0,  204019,   35395,  0 },
+  { "Acrobatic Strikes"                 , 23470, 0x00, 0x0008,  260,   0,   1,  196924,       0,  0 },
   { "Avenging Crusader"                 , 23680, 0x00, 0x0002,   65,   1,   5,  216331,   31884,  0 },
   { "Beacon of Virtue"                  , 23681, 0x00, 0x0002,   65,   2,   6,  200025,       0,  0 },
 } };

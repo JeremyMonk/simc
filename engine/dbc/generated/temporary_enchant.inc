@@ -1,16 +1,12 @@
-// Temporary item enchants, wow build 11.0.0.54605
-static const std::array<temporary_enchant_entry_t, 83> __temporary_enchant_data { {
+// Temporary item enchants, wow build 10.2.6.54358
+static const std::array<temporary_enchant_entry_t, 73> __temporary_enchant_data { {
   {  2713,  0,  29453, "adamantite_sharpening_stone"  },
   {  2955,  0,  34340, "adamantite_weightstone"       },
-  {  7493,  1, 451869, "algari_mana_oil"              },
-  {  7494,  2, 451873, "algari_mana_oil"              },
-  {  7495,  3, 451874, "algari_mana_oil"              },
   {  3265,  0,  45395, "blessed_weapon_coating"       },
   {  3592,  0,  28898, "blessed_wizard_oil"           },
   {  3102,  0,  38615, "bloodboil_poison"             },
   {  2629,  0,  25123, "brilliant_mana_oil"           },
   {  2628,  0,  25122, "brilliant_wizard_oil"         },
-  {  7467,  0, 444755, "bubbling_wax"                 },
   {  6512,  1, 385325, "buzzing_rune"                 },
   {  6513,  2, 385326, "buzzing_rune"                 },
   {  6514,  3, 385327, "buzzing_rune"                 },
@@ -52,12 +48,6 @@ static const std::array<temporary_enchant_entry_t, 83> __temporary_enchant_data 
   {  2626,  0,  25119, "lesser_wizard_oil"            },
   {  2624,  0,  25118, "minor_mana_oil"               },
   {  2623,  0,  25117, "minor_wizard_oil"             },
-  {  7496,  1, 451926, "oil_of_beladars_grace"        },
-  {  7497,  2, 451925, "oil_of_beladars_grace"        },
-  {  7498,  3, 451927, "oil_of_beladars_grace"        },
-  {  7496,  1, 451882, "oil_of_deepening_shadows"     },
-  {  7497,  2, 451901, "oil_of_deepening_shadows"     },
-  {  7498,  3, 451902, "oil_of_deepening_shadows"     },
   {  6198,  0, 322749, "porous_sharpening_stone"      },
   {  6199,  0, 322761, "porous_weightstone"           },
   {  6382,  1, 371641, "primal_razorstone"            },
