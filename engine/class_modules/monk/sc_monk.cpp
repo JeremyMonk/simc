@@ -725,6 +725,7 @@ template <class Base>
 double monk_action_t<Base>::composite_persistent_multiplier( const action_state_t *action_state ) const
 {
   double pm = ab::composite_persistent_multiplier( action_state );
+
   return pm;
 }
 
@@ -903,6 +904,10 @@ double monk_heal_t::composite_persistent_multiplier( const action_state_t *state
   if ( base_t::data().affected_by( p()->passives.jadefire_brand_heal->effectN( 1 ) ) &&
        p()->buff.jadefire_brand->check() )
     pm *= 1 + p()->passives.jadefire_brand_heal->effectN( 1 ).percent();
+
+  if ( p()->talent.general.chi_proficiency && base_t::data().affected_by( p()->talent.general.chi_proficiency->effectN( 2 ) ) )
+    pm *= 1.0 + p()->talent.general.chi_proficiency->effectN( 2 ).percent();
+
 
   return pm;
 }
@@ -9250,6 +9255,9 @@ double monk_t::composite_player_target_armor( player_t *target ) const
 double monk_t::composite_player_multiplier( school_e school ) const
 {
   double multiplier = player_t::composite_player_multiplier( school );
+
+  if ( talent.general.chi_proficiency && ( talent.general.chi_proficiency->effectN( 1 ).affected_schools() & school ) == school )
+    multiplier *= 1.0 + talent.general.chi_proficiency->effectN( 1 ).percent();
 
   return multiplier;
 }
