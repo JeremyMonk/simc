@@ -4483,7 +4483,7 @@ struct fury_of_xuen_summon_t final : monk_spell_t
       }
     }
 
-    p()->pets.fury_of_xuen_tiger.spawn( p()->passives.fury_of_xuen_haste_buff->duration(), 1 );
+    p()->pets.fury_of_xuen_tiger.spawn( p()->passives.fury_of_xuen->duration(), 1 );
 
     if ( p()->talent.windwalker.flurry_of_xuen->ok() )
       p()->active_actions.flurry_of_xuen->execute();
@@ -6263,7 +6263,7 @@ struct fury_of_xuen_stacking_buff_t : public monk_buff_t
 
   void expire_override( int expiration_stacks, timespan_t remaining_duration ) override
   {
-    p().buff.fury_of_xuen_haste->trigger();
+    p().buff.fury_of_xuen->trigger();
     p().active_actions.fury_of_xuen_summon->execute();
     buff_t::expire_override( expiration_stacks, remaining_duration );
   }
@@ -6272,7 +6272,7 @@ struct fury_of_xuen_stacking_buff_t : public monk_buff_t
 // ===============================================================================
 // Fury of Xuen Haste Buff
 // ===============================================================================
-struct fury_of_xuen_haste_buff_t : public monk_buff_t
+struct fury_of_xuen_t : public monk_buff_t
 {
   static void fury_of_xuen_callback( buff_t *b, int, timespan_t )
   {
@@ -6304,16 +6304,15 @@ struct fury_of_xuen_haste_buff_t : public monk_buff_t
       }
     }
   }
-  fury_of_xuen_haste_buff_t( monk_t &p, util::string_view n, const spell_data_t *s ) : monk_buff_t( p, n, s )
+  fury_of_xuen_t( monk_t &p, util::string_view n, const spell_data_t *s ) : monk_buff_t( p, n, s )
   {
     set_cooldown( timespan_t::zero() );
     set_default_value_from_effect( 1 );
-    set_pct_buff_type( STAT_PCT_BUFF_HASTE );
+    set_pct_buff_type( STAT_PCT_BUFF_CRIT );
     set_trigger_spell( p.talent.windwalker.fury_of_xuen );
-    add_invalidate( CACHE_ATTACK_HASTE );
-    add_invalidate( CACHE_RPPM_HASTE );
-    add_invalidate( CACHE_HASTE );
-    add_invalidate( CACHE_SPELL_HASTE );
+    add_invalidate( CACHE_CRIT_CHANCE );
+    add_invalidate( CACHE_ATTACK_CRIT_CHANCE );
+    add_invalidate( CACHE_SPELL_CRIT_CHANCE );
 
     set_period( s->effectN( 3 ).period() );
 
@@ -7637,7 +7636,7 @@ void monk_t::init_spells()
   passives.flurry_of_xuen_driver            = find_spell( 452117 );
   passives.focus_of_xuen                    = find_spell( 252768 );
   passives.fury_of_xuen_stacking_buff       = find_spell( 396167 );
-  passives.fury_of_xuen_haste_buff          = find_spell( 396168 );
+  passives.fury_of_xuen                     = find_spell( 396168 );
   passives.glory_of_the_dawn_damage         = find_spell( 392959 );
   passives.hidden_masters_forbidden_touch   = find_spell( 213114 );
   passives.hit_combo                        = find_spell( 196741 );
@@ -8142,8 +8141,7 @@ void monk_t::create_buffs()
   buff.fury_of_xuen_stacks =
       new buffs::fury_of_xuen_stacking_buff_t( *this, "fury_of_xuen_stacks", passives.fury_of_xuen_stacking_buff );
 
-  buff.fury_of_xuen_haste =
-      new buffs::fury_of_xuen_haste_buff_t( *this, "fury_of_xuen_haste", passives.fury_of_xuen_haste_buff );
+  buff.fury_of_xuen = new buffs::fury_of_xuen_t( *this, "fury_of_xuen", passives.fury_of_xuen );
 
   buff.hit_combo = make_buff( this, "hit_combo", passives.hit_combo )
                        ->set_trigger_spell( talent.windwalker.hit_combo )
@@ -9635,7 +9633,7 @@ void monk_t::trigger_empowered_tiger_lightning( action_state_t *s )
       return;
 
   // 1 = Xuen, 2 = FoX, 3 = Both
-  auto mode = ( 2 * buff.fury_of_xuen_haste->check() ) + buff.invoke_xuen->check();
+  auto mode = ( 2 * buff.fury_of_xuen->check() ) + buff.invoke_xuen->check();
 
   if ( mode == 0 )
     return;
@@ -9657,7 +9655,7 @@ void monk_t::trigger_empowered_tiger_lightning( action_state_t *s )
       if ( s->action->player->name_str.find( "_spirit" ) != std::string::npos )
         return;
 
-      auto blacklist = ( mode == 2 && buff.fury_of_xuen_haste->remains() > buff.fury_of_xuen_haste->tick_time() )
+      auto blacklist = ( mode == 2 && buff.fury_of_xuen->remains() > buff.fury_of_xuen->tick_time() )
                            ? etl_blacklist_fox
                            : etl_blacklist_fox_2;
 
@@ -9677,7 +9675,7 @@ void monk_t::trigger_empowered_tiger_lightning( action_state_t *s )
   if ( amount > 0 )
   {
     auto cache = mode == 2 ? td->debuff.fury_of_xuen_empowered_tiger_lightning : td->debuff.empowered_tiger_lightning;
-    auto duration = std::max( buff.invoke_xuen->remains(), buff.fury_of_xuen_haste->remains() );
+    auto duration = std::max( buff.invoke_xuen->remains(), buff.fury_of_xuen->remains() );
 
     if ( cache->check() )
       cache->current_value += amount;
