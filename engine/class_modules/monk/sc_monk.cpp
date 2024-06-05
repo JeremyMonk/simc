@@ -135,6 +135,10 @@ void monk_action_t<Base>::apply_buff_effects()
   apply_affecting_aura( p()->talent.shado_pan.one_versus_many );
   apply_affecting_aura( p()->talent.shado_pan.vigilant_watch );
 
+  // Conduit of the Celestials
+  apply_affecting_aura( p()->talent.conduit_of_the_celestials.temple_training );
+  apply_affecting_aura( p()->talent.conduit_of_the_celestials.xuens_guidance );
+
   /*
    * Temporary action-specific effects go here.
    * Does it apply a buff to a specific action?
@@ -599,7 +603,8 @@ void monk_action_t<Base>::impact( action_state_t *s )
       {
         double damage_contribution = s->result_amount;
 
-        if ( p()->talent.shado_pan.one_versus_many->ok() && ( base_t::data().id() == 117418 || base_t::data().id() == 121253 ) )
+        if ( p()->talent.shado_pan.one_versus_many->ok() &&
+             ( base_t::data().id() == 117418 || base_t::data().id() == 121253 ) )
           damage_contribution *= ( 1.0f + p()->talent.shado_pan.one_versus_many->effectN( 1 ).percent() );
 
         p()->flurry_strikes_damage += damage_contribution;
@@ -2167,7 +2172,13 @@ struct blackout_kick_t : public monk_melee_attack_t
       if ( p()->talent.brewmaster.spirit_of_the_ox->ok() && p()->rppm.spirit_of_the_ox->trigger() )
         p()->buff.gift_of_the_ox->trigger();
 
-      p()->buff.teachings_of_the_monastery->expire();
+      if ( p()->buff.teachings_of_the_monastery->up() )
+      {
+        p()->buff.teachings_of_the_monastery->expire();
+
+        if ( p()->rng().roll( p()->talent.conduit_of_the_celestials.xuens_guidance->effectN( 1 ).percent() ) )
+          p()->buff.teachings_of_the_monastery->trigger();
+      }
 
       if ( p()->buff.blackout_reinforcement->up() )
         p()->buff.blackout_reinforcement->decrement();
@@ -9822,7 +9833,7 @@ std::unique_ptr<expr_t> monk_t::create_expression( util::string_view name_str )
 
   return base_t::create_expression( name_str );
 }
-  
+
 void monk_t::merge( player_t &other )
 {
   base_t::merge( other );
