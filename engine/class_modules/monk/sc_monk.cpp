@@ -4650,6 +4650,9 @@ struct xuen_spell_t : public monk_spell_t
 
     if ( p()->talent.windwalker.flurry_of_xuen->ok() )
       p()->active_actions.flurry_of_xuen->execute();
+
+    if ( p()->talent.conduit_of_the_celestials.restore_balance->ok() )
+      p()->buff.rushing_jade_wind->trigger();
   }
 };
 
@@ -6346,6 +6349,9 @@ struct rushing_jade_wind_buff_t : public monk_buff_t
 
     set_tick_callback( rjw_callback );
     set_tick_behavior( buff_tick_behavior::REFRESH );
+
+    modify_duration(
+        timespan_t::from_millis( p.talent.conduit_of_the_celestials.yulons_knowledge->effectN( 1 ).base_value() ) );
   }
 
   bool trigger( int stacks, double value, double chance, timespan_t duration ) override
