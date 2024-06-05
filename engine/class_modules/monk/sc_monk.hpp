@@ -702,6 +702,7 @@ public:
     propagate_const<proc_t *> chi_surge;
     propagate_const<proc_t *> counterstrike_tp;
     propagate_const<proc_t *> counterstrike_sck;
+    propagate_const<proc_t *> courage_of_the_white_tiger;
     propagate_const<proc_t *> elusive_footwork_proc;
     propagate_const<proc_t *> face_palm;
     propagate_const<proc_t *> glory_of_the_dawn;
@@ -1382,6 +1383,13 @@ public:
       const spell_data_t *wisdom_of_the_wall_flurry;
     } shado_pan;
 
+    // Conduit of the Celestials
+    struct
+    {
+      const spell_data_t *courage_of_the_white_tiger;
+      const spell_data_t *courage_of_the_white_tiger_heal;
+    } conduit_of_the_celestials;
+
     // Tier 29
     const spell_data_t *kicks_of_flowing_momentum;
     const spell_data_t *fists_of_flowing_momentum;
@@ -1451,8 +1459,6 @@ public:
   // player_t overrides
   action_t *create_action( util::string_view name, util::string_view options ) override;
   double composite_melee_auto_attack_speed() const override;
-  double composite_melee_crit_chance() const override;
-  double composite_spell_crit_chance() const override;
   double composite_attack_power_multiplier() const override;
   double composite_dodge() const override;
   double composite_mastery() const override;

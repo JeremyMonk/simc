@@ -1430,6 +1430,51 @@ struct flurry_strikes_t : public monk_melee_attack_t
 // ==========================================================================
 // Tiger Palm
 // ==========================================================================
+
+// Courage of the White Tiger
+
+struct courage_of_the_white_tiger_heal_t : public monk_heal_t
+{
+  courage_of_the_white_tiger_heal_t( monk_t &p )
+    : monk_heal_t( "courage_of_the_white_tiger_heal", p,
+                   p.passives.conduit_of_the_celestials.courage_of_the_white_tiger_heal )
+  {
+    background = dual      = true;
+    target                 = player;
+    spell_power_mod.direct = 0;
+  }
+};
+
+struct courage_of_the_white_tiger_t : public monk_melee_attack_t
+{
+  courage_of_the_white_tiger_heal_t *heal;
+
+  courage_of_the_white_tiger_t( monk_t *p )
+    : monk_melee_attack_t( "courage_of_the_white_tiger", p,
+                           p->passives.conduit_of_the_celestials.courage_of_the_white_tiger )
+  {
+    background = dual = true;
+
+    heal = new courage_of_the_white_tiger_heal_t( *p );
+
+    add_child( heal );
+  }
+
+  void impact( action_state_t *s ) override
+  {
+    monk_melee_attack_t::impact( s );
+
+    if ( s->result_amount > 0 )
+    {
+      auto heal_value =
+          p()->talent.conduit_of_the_celestials.courage_of_the_white_tiger->effectN( 2 ).percent() * s->result_amount;
+
+      heal->base_dd_min = heal->base_dd_max = heal_value;
+      heal->execute();
+    }
+  }
+};
+
 // Tiger Palm base ability ===================================================
 struct tiger_palm_t : public monk_melee_attack_t
 {
@@ -1437,6 +1482,8 @@ struct tiger_palm_t : public monk_melee_attack_t
   bool blackout_combo;
   bool counterstrike;
   bool combat_wisdom;
+
+  courage_of_the_white_tiger_t *claw;
 
   tiger_palm_t( monk_t *p, util::string_view options_str )
     : monk_melee_attack_t( "tiger_palm", p, p->spec.tiger_palm ),
@@ -1458,6 +1505,13 @@ struct tiger_palm_t : public monk_melee_attack_t
     energize_type = action_energize::NONE;
 
     spell_power_mod.direct = 0.0;
+
+    if ( p->talent.conduit_of_the_celestials.courage_of_the_white_tiger.ok() )
+    {
+      claw = new courage_of_the_white_tiger_t( p );
+
+      add_child( claw );
+    }
   }
 
   double action_multiplier() const override
@@ -1574,6 +1628,12 @@ struct tiger_palm_t : public monk_melee_attack_t
       brew_cooldown_reduction( p()->talent.brewmaster.bonedust_brew->effectN( 3 ).base_value() );
 
     p()->buff.brewmasters_rhythm->trigger();
+
+    if ( p()->rng().roll( p()->talent.conduit_of_the_celestials.courage_of_the_white_tiger->effectN( 1 ).percent() ) )
+    {
+      claw->set_target( s->target );
+      claw->execute();
+    }
   }
 };
 
@@ -7849,6 +7909,10 @@ void monk_t::init_spells()
   passives.shado_pan.high_impact               = find_spell( 451037 );
   passives.shado_pan.wisdom_of_the_wall_flurry = find_spell( 451250 );
 
+  // Conduit of the Celestials
+  passives.conduit_of_the_celestials.courage_of_the_white_tiger      = find_spell( 443088 );
+  passives.conduit_of_the_celestials.courage_of_the_white_tiger_heal = find_spell( 443106 );
+
   // Tier 29
   passives.kicks_of_flowing_momentum = find_spell( 394944 );
   passives.fists_of_flowing_momentum = find_spell( 394949 );
@@ -8510,6 +8574,7 @@ void monk_t::init_procs()
   proc.chi_surge                      = get_proc( "Chi Surge CDR" );
   proc.counterstrike_tp               = get_proc( "Counterstrike - Tiger Palm" );
   proc.counterstrike_sck              = get_proc( "Counterstrike - Spinning Crane Kick" );
+  proc.courage_of_the_white_tiger     = get_proc( "Courage of the White Tiger" );
   proc.elusive_footwork_proc          = get_proc( "Elusive Footwork" );
   proc.face_palm                      = get_proc( "Face Palm" );
   proc.glory_of_the_dawn              = get_proc( "Glory of the Dawn" );
@@ -9071,34 +9136,6 @@ double monk_t::composite_melee_auto_attack_speed() const
   h *= 1.0 / ( 1.0 + buff.momentum_boost_speed->check_value() );
 
   return h;
-}
-
-// monk_t::composite_melee_crit_chance ============================================
-
-double monk_t::composite_melee_crit_chance() const
-{
-  double crit = player_t::composite_melee_crit_chance();
-
-  crit += spec.critical_strikes->effectN( 1 ).percent();
-
-  if ( buff.wisdom_of_the_wall_dodge->check() )
-    crit += buff.wisdom_of_the_wall_dodge->data().effectN( 3 ).percent() * composite_damage_versatility();
-
-  return crit;
-}
-
-// monk_t::composite_spell_crit_chance ============================================
-
-double monk_t::composite_spell_crit_chance() const
-{
-  double crit = player_t::composite_spell_crit_chance();
-
-  crit += spec.critical_strikes->effectN( 1 ).percent();
-
-  if ( buff.wisdom_of_the_wall_dodge->check() )
-    crit += buff.wisdom_of_the_wall_dodge->data().effectN( 3 ).percent() * composite_damage_versatility();
-
-  return crit;
 }
 
 // monk_t::composite_attack_power_multiplier() ==========================
