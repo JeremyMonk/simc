@@ -136,7 +136,7 @@ void monk_action_t<Base>::apply_buff_effects()
   apply_affecting_aura( p()->talent.shado_pan.vigilant_watch );
 
   // T33 Set Effects
-  //apply_affecting_aura( p()->sets->set( MONK_BREWMASTER, TWW1, B2 ) );
+  // apply_affecting_aura( p()->sets->set( MONK_BREWMASTER, TWW1, B2 ) );
 
   /*
    * Temporary action-specific effects go here.
@@ -149,7 +149,7 @@ void monk_action_t<Base>::apply_buff_effects()
   // T33 Set Effects
   parse_effects( p()->buff.tiger_strikes );
   parse_effects( p()->buff.tigers_ferocity );
-  //parse_effects( p()->buff.flow_of_battle );
+  // parse_effects( p()->buff.flow_of_battle );
 }
 
 // Action-related parsing of debuffs. Does not work on spells
@@ -1449,6 +1449,9 @@ struct tiger_palm_t : public monk_melee_attack_t
   bool counterstrike;
   bool combat_wisdom;
 
+  // Tier 33
+  const spell_data_t *ww_set_effect;
+
   tiger_palm_t( monk_t *p, util::string_view options_str )
     : monk_melee_attack_t( "tiger_palm", p, p->spec.tiger_palm ),
       face_palm( false ),
@@ -1459,8 +1462,9 @@ struct tiger_palm_t : public monk_melee_attack_t
 
     if ( p->sets->has_set_bonus( MONK_WINDWALKER, TWW1, B4 ) )
     {
+      ww_set_effect       = p->find_spell( 454505 );
       aoe                 = -1;
-      reduced_aoe_targets = p->sets->set( MONK_WINDWALKER, TWW1, B4 )->effectN( 2 ).base_value();
+      reduced_aoe_targets = ww_set_effect->effectN( 2 ).base_value();
     }
 
     ww_mastery       = true;
@@ -1483,7 +1487,7 @@ struct tiger_palm_t : public monk_melee_attack_t
 
     if ( p()->sets->has_set_bonus( MONK_WINDWALKER, TWW1, B4 ) )
       if ( target != p()->target )
-        m *= p()->sets->set( MONK_WINDWALKER, TWW1, B4 )->effectN( 1 ).percent();
+        m *= ww_set_effect->effectN( 1 ).percent();
 
     return m;
   }
