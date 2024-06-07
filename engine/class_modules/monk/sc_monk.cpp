@@ -1460,7 +1460,8 @@ struct tiger_palm_t : public monk_melee_attack_t
     if ( p->sets->has_set_bonus( MONK_WINDWALKER, TWW1, B4 ) )
     {
       aoe                 = -1;
-      reduced_aoe_targets = p->sets->set( MONK_WINDWALKER, TWW1, B4 )->effectN( 2 ).base_value();
+      full_amount_targets = 1;
+      reduced_aoe_targets = p->passives.t33_ww_4pc->effectN( 2 ).base_value();
     }
 
     ww_mastery       = true;
